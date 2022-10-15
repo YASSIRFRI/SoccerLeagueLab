@@ -19,33 +19,72 @@ public class RoundCalender
 
 
     
-    /** 
-     * @return String
+    /** Displays Rounds with groups and city.
+     * @return void
      */
-    public String getGroups()
+    public void display()
     {
-    ArrayList<String> teams = new ArrayList<>();
-    for(var SoccerTeam: this.teamsList)
-    {
-        teams.add(SoccerTeam.getName());
-    }
-    String groups=this.generategroups(teams);
-    String[] rounds=groups.split(",");
+        ArrayList<ArrayList<SoccerTeam>> teams= generateGroups(this.teamsList);
+        int j=1;
+        correctGroups(teams);
+        System.out.println("teams lenght : "+ this.teamsList.size());
+        System.out.println("rounds lenght : "+ teams.size());
+        System.out.println(teams.get(0));
+
+        for(ArrayList<SoccerTeam> round: teams)
+        {
+            System.out.println("#######################");
+            System.out.println("Round  "+ (j)+" : ");
+
+            for(int i=0;i<round.size()-1;i+=2)
+            {
+                System.out.print(round.get(i).getName());
+                System.out.print(" vs ");
+                System.out.print(round.get(i+1).getName());
+                System.out.print(" In the City of "+round.get(i).getLocation()+"\n");
+                
+                
+            }
+            System.out.println();
+            j++;
+        }
+    
 
 
     }
+
+    /**
+     * correctes generated groups 
+     * @param teams
+    */
+
+    public void correctGroups(ArrayList<ArrayList<SoccerTeam>> teams)
+    {
+        for(int i=0;i<teams.size();i++)
+        {
+            
+            for(int j=0;j<teams.get(i).size()-1;j+=2)
+            {
+                for(int k=j+2;k<teams.get(i).size()-1;k+=2)
+                {
+                    if(teams.get(i).get(j).getLocation()==teams.get(i).get(k).getLocation())
+                    {
+                       SoccerTeam tmp=teams.get(i).get(k);
+                       teams.get(i).set(k, teams.get(i).get(k+1));
+                       teams.get(i).set(k+1,tmp);
+                        break;
+                    }
+                }
+
+            }
+        }
+        
+
+    }
+
    /**
-    * This function returns the year of the movie.
     * 
-    * @return The year of the movie.
-        return year;
-    }
-
-   /**
-    * // Java
-    * public void setYear(Date year) {
-    *         this.year = year;
-    *     }
+    * 
     * 
     * @param year The year of the date
     */
@@ -54,10 +93,7 @@ public class RoundCalender
     }
 
     /**
-     * // Java
-     * public ArrayList<SoccerTeam> getTeamsList() {
-     *         return teamsList;
-     *     }
+     * 
      * 
      * @return The teamsList ArrayList.
      */
@@ -102,50 +138,55 @@ public class RoundCalender
     }
 
 
-   /**
-    *Display method 
-    */
-    public void display()
-    {   
-    System.out.println("RoundCalender [year=" + year + ", teamsList=" + teamsList + ", roundsList=" + roundsList + "]");
-    }
    
    /** 
     * @param teams
     * @return String
-    */
-   public String generategroups(ArrayList<String> teams )
-   {
+    */   
+    public static ArrayList<ArrayList<SoccerTeam>> generateGroups(ArrayList<SoccerTeam> teams)
+    {
         //recursive function
-        if(teams.size()==2){return teams.get(0)+teams.get(1)+","+teams.get(1)+teams.get(0);}
-        ArrayList<String> le=new ArrayList<>();
-        ArrayList<String> ri=new ArrayList<>();
+        if(teams.size()==2){
+            ArrayList<ArrayList<SoccerTeam>> answer = new ArrayList<>();
+            ArrayList<SoccerTeam> mn3rf1 = new ArrayList<>();
+            mn3rf1.add(teams.get(0));
+            mn3rf1.add(teams.get(1));
+            ArrayList<SoccerTeam> mn3rf2 = new ArrayList<>();
+            mn3rf2.add(teams.get(1));
+            mn3rf2.add(teams.get(0));
+            answer.add(mn3rf1);
+            answer.add(mn3rf2);
+            return answer;
+        }
+        ArrayList<SoccerTeam> le=new ArrayList<>();
+        ArrayList<SoccerTeam> ri=new ArrayList<>();
         le.addAll(teams.subList( 0, teams.size()/2));
         ri.addAll(teams.subList(teams.size()/2, teams.size()));
-        String left=generategroups(le);//left recursive call
-        String right=generategroups(ri);//right recursive call
-        String s="";
-        String[] l= left.split(",");
-        String[] r= right.split(",");
-        //generating the new generategroups involving both sets
-        for(int i=0;i<l.length;i++)
+        ArrayList<ArrayList<SoccerTeam>> left=generateGroups(le);//left recursive call
+        ArrayList<ArrayList<SoccerTeam>> right=generateGroups(ri);//left recursive call
+        ArrayList<ArrayList<SoccerTeam>> s=new ArrayList<>();//Combiner between left and right
+        //generating the new generateGroups involving both sets
+        for(int i=0;i<left.size();i++)
         {
-            s+=l[i]+" "+r[i]+",";
+            left.get(i).addAll(right.get(i));
         }
-        String s1="";
-        String s2="";
+        s=left;
+        ArrayList<SoccerTeam> s1=new ArrayList<>();
+        ArrayList<SoccerTeam> s2=new ArrayList<>();
    
         for(int i=0;i<teams.size()/2;i++)
         {
             for(int j=0;j<teams.size()/2;j++)
             {
-                s1+=teams.get(j)+teams.get((i+j)%(teams.size()/2)+teams.size()/2)+" ";
-                s2+=teams.get((i+j)%(teams.size()/2)+teams.size()/2)+teams.get(j)+" ";
+                SoccerTeam[] r1={teams.get(j),teams.get((i+j)%(teams.size()/2) + teams.size()/2)};
+                s1.addAll(Arrays.asList(r1));
+                SoccerTeam[] r2={teams.get((i+j)%(teams.size()/2)+teams.size()/2),teams.get(j)};
+                s2.addAll(Arrays.asList(r2));
             }
-            s+=s1+",";
-            s+=s2+",";
-            s1="";
-            s2="";
+            s.add(s1);
+            s.add(s2);
+            s1=new ArrayList<>();
+            s2=new ArrayList<>();
         }
         return s;
     }

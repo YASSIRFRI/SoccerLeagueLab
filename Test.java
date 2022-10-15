@@ -50,16 +50,13 @@ public class Test{
         /*
          * Display
         */
-        //+Botola_21.display();
-        //+Botola_22.display();
-        //+Botola_23.display();
-
-
+        Botola_21.display();
+        Botola_22.display();
+        Botola_23.display();
+        
         RoundCalender c1 = new RoundCalender("1/1/2023", teamsList_);
 
         c1.display();
-        System.out.println(c1.getGroups());
-
 
     }
 

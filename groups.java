@@ -12,8 +12,8 @@ class Solution {
     public static void main(String[] args)
     {
        
-        ArrayList<String> students = new ArrayList<>();
-        System.out.println("Enter number of students:");
+        ArrayList<String> teams = new ArrayList<>();
+        System.out.println("Enter number of teams:");
         Scanner sncr= new Scanner(System.in);
         int n= sncr.nextInt();
         sncr.nextLine();
@@ -21,13 +21,13 @@ class Solution {
         while(n>0)
         {
             tmp=sncr.nextLine();
-            students.add(tmp);
+            teams.add(tmp);
             n--;
 
         }
-        System.out.println(students);
+        System.out.println(teams);
         sncr.close();
-        String[] answer=groups(students).split(",");
+        String[] answer=generateGroups(teams).split(",");
         for(int i=0;i<answer.length;i++)
         {
             System.out.println("Project "+(i+1)+": "+answer[i]);
@@ -36,38 +36,46 @@ class Solution {
 
 
     }
-    public static String groups(ArrayList<String> students)
+    public static ArrayList<ArrayList<SoccerTeam>> generateGroups(ArrayList<SoccerTeam> teams)
     {
         //recursive function
-        if(students.size()==2){return students.get(0)+students.get(1)+","+students.get(1)+students.get(0);}
-        ArrayList<String> le=new ArrayList<>();
-        ArrayList<String> ri=new ArrayList<>();
-        le.addAll(students.subList( 0, students.size()/2));
-        ri.addAll(students.subList(students.size()/2, students.size()));
-        String left=groups(le);//left recursive call
-        String right=groups(ri);//right recursive call
-        String s="";
-        String[] l= left.split(",");
-        String[] r= right.split(",");
-        //generating the new groups involving both sets
-        for(int i=0;i<l.length;i++)
-        {
-            s+=l[i]+" "+r[i]+",";
+        if(teams.size()==2){
+            ArrayList<ArrayList<SoccerTeam>> answer = new ArrayList<>();
+            ArrayList<SoccerTeam> mn3rf = new ArrayList<>();
+            mn3rf.add(teams.get(0));
+            mn3rf.add(teams.get(1));
+            answer.add(mn3rf);
+            return answer;
         }
-        String s1="";
-        String s2="";
-   
-        for(int i=0;i<students.size()/2;i++)
+        ArrayList<SoccerTeam> le=new ArrayList<>();
+        ArrayList<SoccerTeam> ri=new ArrayList<>();
+        le.addAll(teams.subList( 0, teams.size()/2));
+        ri.addAll(teams.subList(teams.size()/2, teams.size()));
+        ArrayList<ArrayList<SoccerTeam>> left=generateGroups(le);//left recursive call
+        ArrayList<ArrayList<SoccerTeam>> right=generateGroups(ri);//left recursive call
+        ArrayList<ArrayList<SoccerTeam>> s=new ArrayList<>();//Combiner between left and right
+        //generating the new generateGroups involving both sets
+        for(int i=0;i<left.size();i++)
         {
-            for(int j=0;j<students.size()/2;j++)
+            left.get(i).addAll(right.get(i));
+        }
+        s=left;
+        ArrayList<SoccerTeam> s1=new ArrayList<>();
+        ArrayList<SoccerTeam> s2=new ArrayList<>();
+   
+        for(int i=0;i<teams.size()/2;i++)
+        {
+            for(int j=0;j<teams.size()/2;j++)
             {
-                s1+=students.get(j)+students.get((i+j)%(students.size()/2)+students.size()/2)+" ";
-                s2+=students.get((i+j)%(students.size()/2)+students.size()/2)+students.get(j)+" ";
+                SoccerTeam[] r1={teams.get(j),teams.get((i+j)%(teams.size()/2) + teams.size()/2)};
+                s1.addAll(Arrays.asList(r1));
+                SoccerTeam[] r2={teams.get((i+j)%(teams.size()/2)+teams.size()/2),teams.get(j)};
+                s2.addAll(Arrays.asList(r2));
             }
-            s+=s1+",";
-            s+=s2+",";
-            s1="";
-            s2="";
+            s.add(s1);
+            s.add(s2);
+            s1.clear();
+            s2.clear();;
         }
         return s;
     }
