@@ -27,12 +27,6 @@ class Solution {
         }
         System.out.println(teams);
         sncr.close();
-        String[] answer=generateGroups(teams).split(",");
-        for(int i=0;i<answer.length;i++)
-        {
-            System.out.println("Project "+(i+1)+": "+answer[i]);
-        }
-
 
 
     }
